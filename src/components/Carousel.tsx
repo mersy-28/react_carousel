@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import './Carousel.scss';
 
 export interface CarouselProps {
@@ -10,7 +10,7 @@ export interface CarouselProps {
   infinite?: boolean;
 }
 
-const Carousel: React.FC<CarouselProps> = ({
+export const Carousel: React.FC<CarouselProps> = ({
   images,
   itemWidth = 130,
   frameSize = 3,
@@ -30,7 +30,6 @@ const Carousel: React.FC<CarouselProps> = ({
     () => (infinite ? images.slice(-safeFrameSize) : []),
     [images, infinite, safeFrameSize]
   );
-
   const trackImages = useMemo(
     () => (infinite ? [...tail, ...images, ...head] : images),
     [head, tail, images, infinite]
@@ -39,7 +38,6 @@ const Carousel: React.FC<CarouselProps> = ({
   const startIndex = infinite ? safeFrameSize : 0;
   const [index, setIndex] = useState<number>(startIndex);
   const [withTransition, setWithTransition] = useState<boolean>(true);
-  const trackRef = useRef<HTMLUListElement | null>(null);
 
   useEffect(() => {
     setWithTransition(false);
@@ -52,29 +50,20 @@ const Carousel: React.FC<CarouselProps> = ({
   const canPrev = infinite || index > 0;
   const canNext = infinite || index < maxIndex;
 
-  const goPrev = (): void => {
+  const goPrev = () => {
     if (!canPrev) return;
     setWithTransition(true);
-    if (infinite) {
-      setIndex((i) => i - safeStep);
-    } else {
-      setIndex((i) => Math.max(0, i - safeStep));
-    }
+    setIndex(i => (infinite ? i - safeStep : Math.max(0, i - safeStep)));
   };
 
-  const goNext = (): void => {
+  const goNext = () => {
     if (!canNext) return;
     setWithTransition(true);
-    if (infinite) {
-      setIndex((i) => i + safeStep);
-    } else {
-      setIndex((i) => Math.min(maxIndex, i + safeStep));
-    }
+    setIndex(i => (infinite ? i + safeStep : Math.min(maxIndex, i + safeStep)));
   };
 
-  const handleTransitionEnd = (): void => {
+  const handleTransitionEnd = () => {
     if (!infinite) return;
-
     const first = startIndex;
     const last = startIndex + total - 1;
 
@@ -96,21 +85,21 @@ const Carousel: React.FC<CarouselProps> = ({
     <div className="Carousel">
       <div className="Carousel__controls">
         <button
-          data-cy="prev"
           type="button"
           className="button is-light"
           onClick={goPrev}
           disabled={!canPrev}
+          data-cy="prev"
         >
           Prev
         </button>
 
         <button
-          data-cy="next"
           type="button"
           className="button is-light"
           onClick={goNext}
           disabled={!canNext}
+          data-cy="next"
         >
           Next
         </button>
@@ -121,7 +110,6 @@ const Carousel: React.FC<CarouselProps> = ({
         style={{ width: `${framePx}px`, overflow: 'hidden' }}
       >
         <ul
-          ref={trackRef}
           className="Carousel__track"
           onTransitionEnd={handleTransitionEnd}
           style={{
@@ -134,10 +122,7 @@ const Carousel: React.FC<CarouselProps> = ({
           }}
         >
           {trackImages.map((src, i) => (
-            <li
-              key={`${src}-${i}`}
-              style={{ width: `${itemWidth}px`, flex: '0 0 auto' }}
-            >
+            <li key={`${src}-${i}`} style={{ width: `${itemWidth}px`, flex: '0 0 auto' }}>
               <img src={src} alt={`slide-${i + 1}`} width={itemWidth} />
             </li>
           ))}

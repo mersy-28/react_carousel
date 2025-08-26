@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import './App.scss';
-import Carousel from './components/Carousel';
+import { Carousel } from './components/Carousel';
 
 const IMAGES: string[] = Array.from({ length: 10 }, (_, i) => `./img/${i + 1}.png`);
 
@@ -58,7 +58,6 @@ const App: React.FC = () => {
         frameSize={frameSize}
         step={step}
         animationDuration={animationDuration}
-        infinite
       />
     </div>
   );
