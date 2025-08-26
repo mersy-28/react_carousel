@@ -58,6 +58,7 @@ const App: React.FC = () => {
         frameSize={frameSize}
         step={step}
         animationDuration={animationDuration}
+        infinite
       />
     </div>
   );
